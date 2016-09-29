@@ -403,6 +403,7 @@ def changes_log(request):
     }
     return render(request, 'workshops/changes_log.html', context)
 
+
 #------------------------------------------------------------
 
 
@@ -456,6 +457,9 @@ class OrganizationDelete(OnlyForAdminsMixin, PermissionRequiredMixin,
     success_url = reverse_lazy('all_organizations')
 
 
+#------------------------------------------------------------
+
+
 @admin_required
 def all_memberships(request):
     '''List all memberships.'''
@@ -468,6 +472,15 @@ def all_memberships(request):
                'all_memberships' : memberships,
                'filter': filter}
     return render(request, 'workshops/all_memberships.html', context)
+
+
+@admin_required
+def membership_details(request, membership_id):
+    '''List details of a particular membership.'''
+    membership = get_object_or_404(Membership, id=membership_id)
+    context = {'title' : '{0}'.format(membership),
+               'membership' : membership}
+    return render(request, 'workshops/membership.html', context)
 
 
 @admin_required
@@ -494,6 +507,13 @@ def membership_create(request, org_domain):
         'form': form,
     }
     return render(request, 'workshops/generic_form.html', context)
+
+
+class MembershipCreate(OnlyForAdminsMixin, PermissionRequiredMixin,
+                 CreateViewContext):
+    permission_required = 'workshops.add_membership'
+    model = Membership
+    form_class = MembershipForm
 
 
 class MembershipUpdate(OnlyForAdminsMixin, PermissionRequiredMixin,
